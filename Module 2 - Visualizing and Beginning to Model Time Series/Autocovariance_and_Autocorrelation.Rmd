@@ -1,0 +1,91 @@
+---
+title: "Autocovariance_and_Autocorrelation"
+output: html_document
+---
+
+Stochastic Processes:
+- If you just put a lot of RVs together and give them a sequence, we call this a stochastic process; each of these RVs may have their own distribution, expectations, or variances
+   - Stochastic means that at EVERY step, there's some randomness; you don't know exactly where you're going to be, but there's some distribution of X at that time stamp, we just don't know exactly where it is
+
+Time series definition:
+- It's just any dataset that's collected at different times
+- If we assume there's some **stochastic process going on in the background** that we're not aware of (perhaps RVs X1, X2, X3, etc.), the realization of X1 is my first datapoint in the series, the realization of X2 is my second datapoint in my time series, and so on.
+- So, if we KNOW the stochastic process (e.g., if I know how X1, X2, X3... changes, then I can say something meaningful about my time series), but we should note that for X1, X2, X3..., **it might come with its own ensemble of time series**; however, we only have one time series; so, by having only one time series (or one point at each time), we would like to say something meaningful about the stochastic process.
+
+Autocorrelation function is defined as the following:
+- gamma(s, t) = Cov(X_s, X_t) = E[(X_s - mu_s)(X_t - mu_t)]
+- gamma(t, t) = E[(X_t - mu_t)^2] = Var(X_t) = sigma_t^2
+- So basically, autocovariance is defined as taking the covariance of different elements in our stochastic process; if we take X_t and X_s - where s and t might be in different locations in time - and we get the cov of them, we get gamma(s, t)
+
+Defining gamma_k:
+- gamma_k = gamma(t, t + k) ~= C_k
+- "Autocovariance coefficient"
+- Basically, **gamma only depends on the time difference btwn the RVs**
+   - What this means is that it doesn't matter what t is; its the DIFFERENCE between the two times that matters
+- The reason this is the case is because we're assuming that we're working with **stationary** time series, which means that the properties at one part of the time series is the same as the properties of other parts of the time series.
+- Here's the problem with gamma_k: we usually don't have the underlying stochastic process, and we only have a time series, which is just a realization of the stochastic process; so, we're going to use that to **approximate gamma_k with C_k**, which we'll again call our autovariance coefficient
+
+
+
+More on autocovariance coefficients:
+- Once again, cov is measuring the linear dependence btwn two RVs
+- Autocov coeff at lags: gamma_k = Cov(X_t, X_t+k)  (Same as above, but just replace gamma with Cov function)
+- Since we assume weak stationarity, it doesn't matter what t is, and we would have the same gamma_k as long as the distance btwn the two RVs is k
+- Again, C_k is going to be an estimation for gamma_k
+   - *C_k is basically just the***sample***covariance btwn all the x values with lag k*
+   - In other words, if you have a time-series of 10 points, and your lag is 3, then you would find the cov using the data points at time t1 and t4, t2 and t5, ... t7 and t10, ultimately giving you 7 "samples" to **calculate the cov of lag k from**
+   - Btw, the sample mean for X is now the sum of the Xs at different time points divided by the number of samples
+
+Routine in R:
+- acf() routine
+- acf(time_series, type='covariance')
+```{r}
+# ts() will put a dataset that we generate and put a time series structure on it
+# rnorm() is just generating a bunch of datapoints from a standard normal distribution
+purely_random_process = ts(rnorm(100))
+```
+Now getting the acf:
+```{r}
+acf(purely_random_process, type='covariance')
+```
+Getting the actual values from acf:
+```{r}
+acf(purely_random_process, type='covariance')
+```
+
+
+
+Autocorrelation function (ACF):
+- Assumptions:
+   - Weak stationarity
+- The autocorrelation coefficient (autocorr coeff) btwn X_t and X_t+k is defined to be -1 <= rho_k = (gamma_k / gamma_0) <= 1
+      - gamma_k is the autocov at lag k, and gamma_0 is the autocov at lag 0 (the first autocov coeff)
+- Estimation of autocorr coeff at lag k: r_k = (C_k / C_0)
+   - Again, c_k was the estimation for autocov coeff at lag k, and c0 is the autocov estimation for the autocov coeff at lag 0
+- Autocorr coeff at different lags: "Correlogram"
+- It **always** starts at 1 since r_0 = c_0 / c_0 = 1
+```{r}
+acf(purely_random_process, main='Correlogram of a purely random process')
+```
+Again, r_0 will always be 1; however, we see that there's pretty much no correlation between all the different lags
+- In other words, no matter what lag there is (though watch out for random noise), there will essentially be no correlation between datapoints with that lag
+- If there IS a pattern - so if there does seem to be some correlation between the ACF and the lag, then it might indicate seasonality or that future time points does have a dependency on past time points
+- The dashed lines above are showing the significance level btw
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

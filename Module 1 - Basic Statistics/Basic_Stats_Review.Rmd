@@ -1,0 +1,123 @@
+---
+title: "Basic_Stats_Review"
+output: html_document
+---
+
+Review of Basic Statistics 1 - Simple Linear Regression
+```{r}
+plot(co2, main='Atmosphereic CO2 Concentration')
+```
+```{r}
+# Developing a linear model
+co2.linear.model = lm(co2 ~ time(co2))
+co2.linear.model
+```
+```{r}
+plot(co2, main='Atmospheric CO2 Concentration with Fitted Line')
+abline(co2.linear.model)
+```
+Quiz
+```{r}
+x=c(1,2,3,4);
+y=c(5, 7, 12, 13);
+m=lm(y~x)
+m
+```
+
+Review of Basic Statistics 2 - More Linear Regression
+```{r}
+co2.lm = lm(co2 ~ time(co2))
+co2.lm
+```
+```{r}
+## plot(co2, main='Atmospheric CO2 Concentration with Fitted Line')
+## abline(co2.lm)
+
+# Getting residuals
+co2.residuals = resid(co2.lm)
+hist(co2.residuals, main="Histogram of Residuals")
+```
+This looks relatively normal, but let's use qq plots instead
+```{r}
+qqnorm(co2.residuals)
+qqline(co2.residuals)
+```
+So now we see that there's systematic departures from normality, so there might be some cause for concern here.
+```{r}
+co2_time_plot = co2.residuals ~ time(co2)
+plot(co2_time_plot)
+```
+There seems to be some systematic changes in residuals. Let's zoom in to see if we can see anything further.
+```{r}
+plot(co2_time_plot, xlim=c(1960, 1963), main="Zoomed Residuals")
+```
+
+Quiz
+```{r}
+library(faraway)
+plot(punting$Distance~ punting$Hang); 
+abline( lm(punting$Distance~ punting$Hang) )
+
+m=lm(punting$Distance~ punting$Hang)
+qqnorm(resid(m))
+qqline(resid(m))
+# Overall, it looks at least relatively normal
+```
+
+Review of Basic Statistics 3 - Inference
+```{r}
+# Gossett Data (10 people)
+help(sleep)
+```
+
+```{r}
+plot(extra ~ group, data=sleep, main='Extra Sleep in Gossett Data by Group')
+attach(sleep)  # Just makes the variables available in the environment
+extra.1=extra[group==1]
+extra.2=extra[group==2]
+```
+T-tests
+```{r}
+t.test(extra.1, extra.2, paired=TRUE, alternative="two.sided")
+```
+Because we got a t-statistic of -4.06 and a CI that doesn't include 0, we can pretty confidently rejected the null hypothesis.
+
+Review of Basic Statistics 4 - Correlation
+```{r}
+# Using the trees example
+help(trees)
+```
+Using a pairplot to see correlation
+```{r}
+pairs(trees, pch=21, bg=c('red'))  # pch and bg are just color things
+```
+Clearly, girth is a good predictor of volume.
+```{r}
+# Calculating the covariance
+cov(trees)
+```
+This doesn't look great because of the units involved, so we'll look at the correlation to account for that.
+```{r}
+cor(trees)
+```
+Correlation can be expressed rather simply as:
+r = (SSXY) / ( sqrt(SSX) * sqrt(SSY) )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

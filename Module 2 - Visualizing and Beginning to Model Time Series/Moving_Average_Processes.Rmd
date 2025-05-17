@@ -1,0 +1,127 @@
+---
+title: "Moving_Average_Processes"
+output: html_document
+---
+
+Random Walk
+
+Stock modeling:
+- X_t = X_t-1 + Z_t
+   - X_t: stock price for today
+   - X_t-1: stock price for yesterday
+   - Z_t: white noise (residual), distributed normally
+
+Random walk interpretations:
+- 1. Wherever you are, you just add a little noise to it, and then you're on the next step. And then you add some more noise, and then you're on the next step after that. And so on and so forth.
+- 2. X_t is the stock price today, and X_t-1 is the stock price yesterday; however, you add some random noise for some more change
+**Basically though, a random walk is a stochastic process where the current value is influenced by the previous value, plus a random error term.**
+
+Random walk process:
+1. X_0 = 0
+2. X_1 = Z_1 (since it's X_0 + Z_1 = 0 + Z_1)
+3. X_2 = Z_1 + Z_2
+Thus: X_t = (sum_i=1_to_t(Zi))
+
+E[X_t] = mu*t (where mu is the average and t is the number of time steps)
+V[X_t] = (sigma^2)*t
+
+Simulation:
+- Assume X_1 = 0, Z_t ~ Normal(0,1), X_t = X_t-1 + Z_t for t = 2, 3,..., 1000
+```{r}
+x=NULL
+x[1]=0
+for(i in 2:1000){
+  x[i] = x[i-1] + rnorm(1)
+}
+```
+Random walk time
+```{r}
+random_walk = ts(x)
+plot(random_walk, main='A random walk', ylab='', xlab='Days', col='blue', lwd=2)
+```
+```{r}
+acf(random_walk)
+```
+We can see that there's a high correlation even 30 lags back, which again just shows that **there is high correlation in this dataset** and that **there is no stationarity**.
+
+Removing the trend from the random walk by doing the following:
+1. X_t = X_t-1 + Z_t
+2. X_t - X_t-1 = Z_t
+3. Define ∆X_t = X_t - X_t-1
+4. ∆X_t = Z_t, which is a purely random process, since Z_t - which is just random noise - IS a purely random process
+```{r}
+plot(diff(random_walk))  # This will give X_2 - X_1, X_3 - X_2, etc.
+```
+This basically looks like white noise, since it's a purely random process
+```{r}
+acf(diff(random_walk))
+```
+And we see here that this is a purely random process, just like the one we generated previously. The key takeaway here is that we managed to **remove the trend by just applying the difference operator**.
+
+
+
+Moving average processes:
+- Intuition: X_t is a stock price of a company, and each daily announcement of the company (to the press or public or whatever) is modeled as a noise
+- Let's assume that the announcements are affecting the stock price; however, the effect of those daily announcements (adgain, noises Z_t) on the stock price (again, X_t) **might last a few days (e.g., 2 days)**; then, the stock price is a linear combination of the noises that affects it:
+   - X_t = Z_t + (θ_1 * Z_t-1) + (θ_2 * Z_t-2)
+      - Basically, Z_t is the noise today, Z_t-1 is the noise from yesterday, and Z_t-2 is the noise from two days ago; and ALL of that noise contributes to my stock price today
+      - The θ_1 and θ_2 are the weights of the previous two days, since it's probably less than the Z_t of today
+- Overall, this is called a **moving average model (of order 2)**, or MA(2), since it looks at 2 days back
+
+MA(q) model:
+- X_t = Z_t + (θ_1 * Z_t-1) + (θ_2 * Z_t-2) + ... + (θ_q * Z_t-q)
+
+
+
+Simulating a MA(2) process
+- Again, from the previous lecture, Z_i ~ Normal(mu, sigma^2), and Z_i are iid
+- In our simulation: X_t = Z_t + (0.7 * Z_t-1) + (0.2 * Z_t-2), Z_t ~ Normal(0,1)
+```{r}
+# Generate noise
+noise = rnorm(10000)
+
+# Introduce a variable
+ma_2 = NULL
+
+# Loop for generating MA(2) process
+for(i in 3:10000){
+  ma_2[i] = noise[i] + 0.7*noise[i-1] + 0.2*noise[i-2]
+}
+
+# Shift data to left by 2 units (so we start from index 1)
+moving_average_process = ma_2[3:10000]
+
+# Put time series structure on vanilla data
+moving_average_process = ts(moving_average_process)
+
+# Partition output graphics as a multi frame of 2 rows and 1 col
+par(mfrow=c(2,1))  # Basically, we're going to have multiple frames
+
+# Plot the process and plot is ACF
+dev.new(width=5, height=4)
+plot(moving_average_process, main='A MA process or order 2', ylab='', col='blue')
+acf(moving_average_process, main='Corellogram of a MA process of order 2')
+```
+We see from the ACF (autocorrelation function) and we that there's a high correlation with lag 1, and there's also some noise coming from 2 days back. **This is very much a characteristic of a MA(q) process**
+- If we look at the ACF of a MA(q) process, the autocorr will cut off at lag 2
+- Basically, if we see that the ACF cuts off after some lag, it gives us a reason to model our data using a moving average process
+- (We can think of the ACF as becoming 0 at the order of the process (in this case, 2))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

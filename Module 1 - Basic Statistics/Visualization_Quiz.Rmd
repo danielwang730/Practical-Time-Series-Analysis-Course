@@ -1,0 +1,25 @@
+---
+title: "Visualization_Quiz"
+output: html_document
+---
+
+Question 1 & 2:
+```{r}
+quiz_data=c(37, 86, 79, 95, 61, 93, 19, 98, 121, 26, 39, 11, 26, 75, 29,130, 42, 8)
+hist(quiz_data, xlab='Quiz Data', main='Histogram', breaks=10, freq=F)
+lines(density(quiz_data), col='red', lwd=5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

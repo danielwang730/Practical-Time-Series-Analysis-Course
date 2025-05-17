@@ -1,0 +1,53 @@
+---
+title: "Module_2_Quiz"
+output: html_document
+---
+
+Question 4:
+```{r}
+# Simulating a non-stationary time series
+
+# Set seed so thet we generate the same dataset
+set.seed(2017)
+# time variable 
+t=seq(0,1,1/100)
+# generate a time series
+some.time.series=2+3*t+ rnorm(length(t))
+
+# obtain acv for this time series below
+ts_example = ts(some.time.series)
+acf(ts_example, type='covariance')
+```
+```{r}
+plot(ts_example)
+```
+```{r}
+(acf(ts_example, type='covariance'))
+```
+Btw, the sample autocovariance coefficient (ACV coeff) is C5, which is 0.403.
+
+Question 6:
+```{r}
+(acf(ts_example))
+```
+
+Question 10:
+```{r}
+# Simulating MA(4) process.
+# X_t= Z_t+0.2 Z_(t-1)+0.3 Z_(t-2)+ 0.4 Z_(t-3)
+
+set.seed(2^10)
+z=NULL
+z=rnorm(1000)
+data=NULL
+for(i in 4:1000){
+  data[i-3]=z[i]+0.2*z[i-1]+0.3*z[i-2]+0.4*z[i-3]
+  }
+data=ts(data)
+
+# find acf below
+(acf(data))
+```
+
+
+
